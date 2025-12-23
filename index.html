@@ -3,267 +3,313 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ワクワク英語タイピング - 外部データ版</title>
+    <title>ワクワク英語タイピング - キッズサポート版</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@400;500&family=Andika&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Kiwi Maru', serif;
             background-color: #f0f9ff;
             overflow-x: hidden;
+            user-select: none;
         }
-        .bouncy { animation: bounce 0.5s infinite alternate; }
-        @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-5px); } }
-        .shake { animation: shake 0.5s; }
-        @keyframes shake { 0%,100%{transform:translateX(0);}25%{transform:translateX(-5px);}75%{transform:translateX(5px);} }
-        .correct-pop { animation: pop 0.3s cubic-bezier(0.175,0.885,0.32,1.275); }
-        @keyframes pop { 0%{transform:scale(0.8);}100%{transform:scale(1);} }
-        .unit-card { transition: all 0.2s; }
-        .unit-card:hover { transform: translateY(-5px); }
-        #unit-list::-webkit-scrollbar { width: 8px; }
-        #unit-list::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
-        #unit-list::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .typing-font {
+            font-family: 'Andika', sans-serif;
+        }
+        .key-guide {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #cbd5e1;
+            border-radius: 8px;
+            background: white;
+            font-weight: bold;
+            transition: all 0.1s;
+        }
+        .key-active {
+            background-color: #fde047;
+            border-color: #eab308;
+            transform: translateY(2px);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .bouncy {
+            animation: bounce 0.5s infinite alternate;
+        }
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-5px); }
+        }
+        .shake {
+            animation: shake 0.5s;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
     </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-4">
+<body class="p-4">
 
-    <div id="app" class="w-full max-w-3xl bg-white rounded-3xl shadow-2xl p-6 md:p-10 relative border-8 border-yellow-300">
-        <div id="home-screen" class="text-center">
-            <h1 class="text-3xl md:text-4xl font-bold text-blue-500 mb-2 bouncy">えいごタイピング！</h1>
-            <p id="load-status" class="text-gray-500 mb-4 text-sm">words.json から読み込み中...</p>
+    <div class="max-w-4xl mx-auto flex justify-end gap-4 mb-4">
+        <label class="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm cursor-pointer border-2 border-blue-200">
+            <input type="checkbox" id="case-toggle" class="w-5 h-5" onchange="toggleCase()">
+            <span class="text-sm font-bold text-blue-800">大文字にする (A B C)</span>
+        </label>
+    </div>
 
-            <div class="flex justify-center gap-2 mb-6 flex-wrap">
-                <button onclick="filterLevel('all')" class="px-4 py-1 bg-blue-100 rounded-full text-xs font-bold hover:bg-blue-200">すべて</button>
-                <button onclick="filterLevel('elementary')" class="px-4 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold hover:bg-green-200">小学校</button>
-                <button onclick="filterLevel('junior-high-1')" class="px-4 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-bold hover:bg-orange-200">中1</button>
-            </div>
-
-            <div id="unit-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-8 max-h-[50vh] overflow-y-auto p-2">
-                <p class="col-span-full text-gray-400">データを確認しています...</p>
-            </div>
-        </div>
-
-        <div id="mode-selection-screen" class="hidden text-center">
-            <button onclick="showHomeScreen()" class="absolute top-4 left-4 text-gray-400 hover:text-blue-500 text-2xl">🔙</button>
-            <div id="level-badge" class="inline-block px-3 py-1 rounded-full text-xs font-bold mb-2"></div>
-            <h2 id="selected-unit-title" class="text-2xl font-bold text-gray-700 mb-6 underline decoration-yellow-300">ユニット名</h2>
-            <div class="space-y-4 max-w-sm mx-auto">
-                <button onclick="startGame('study')" class="w-full py-6 bg-green-400 hover:bg-green-500 text-white rounded-2xl text-xl font-bold shadow-lg border-b-8 border-green-600 transition-all transform hover:scale-105">
-                    📖 がくしゅうモード<br><span class="text-sm font-normal">おてほんを みて おぼえよう</span>
-                </button>
-                <button onclick="startGame('test')" class="w-full py-6 bg-orange-400 hover:bg-orange-500 text-white rounded-2xl text-xl font-bold shadow-lg border-b-8 border-orange-600 transition-all transform hover:scale-105">
-                    🔥 テストモード<br><span class="text-sm font-normal">日本語だけでチャレンジ！</span>
-                </button>
+    <div id="app" class="max-w-4xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden min-h-[600px] relative border-8 border-yellow-300">
+        
+        <div id="screen-start" class="p-8 text-center">
+            <h1 class="text-5xl font-bold text-blue-600 mb-4 bouncy mt-10">ワクワクえいごタイピング</h1>
+            <p class="text-gray-500 mb-8 text-xl">すきなコースをえらんでね！</p>
+            <div id="unit-list" class="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[400px] overflow-y-auto p-2">
+                <p id="loading-msg" class="text-center col-span-2">よみこみちゅう...</p>
             </div>
         </div>
 
-        <div id="game-screen" class="hidden">
+        <div id="screen-play" class="hidden p-8">
             <div class="flex justify-between items-center mb-6">
-                <div class="text-lg font-bold text-blue-400"><span id="mode-label" class="mr-2 px-2 py-1 bg-blue-100 rounded text-xs"></span> <span id="current-count">1</span> / <span id="total-count">5</span></div>
-                <div class="w-1/2 h-3 bg-gray-200 rounded-full">
-                    <div id="progress-bar-fill" class="h-full bg-yellow-400 rounded-full transition-all duration-300" style="width: 0%"></div>
+                <button onclick="showScreen('start')" class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-xl font-bold text-gray-700">← もどる</button>
+                <div id="progress-bar-container" class="flex-1 mx-8 bg-gray-100 h-6 rounded-full overflow-hidden border-2 border-gray-200">
+                    <div id="progress-bar" class="bg-green-400 h-full transition-all duration-300" style="width: 0%"></div>
+                </div>
+                <div id="timer" class="text-2xl font-bold text-blue-500 w-16"></div>
+            </div>
+
+            <div class="text-center py-10">
+                <div id="jp-display" class="text-3xl text-gray-500 mb-2"></div>
+                <div id="en-display" class="text-7xl font-bold tracking-widest typing-font text-blue-900 mb-10"></div>
+                
+                <input type="text" id="typing-input" class="absolute opacity-0 pointer-events-none" autocomplete="off">
+                <div id="input-guide" class="text-xl text-gray-400">キーボードで うってみよう！</div>
+                <div id="feedback-msg" class="h-8 mt-4 font-bold"></div>
+            </div>
+
+            <div id="keyboard-guide" class="mt-8 flex flex-col items-center gap-1 opacity-80">
+                <div class="flex gap-1" id="row-1"></div>
+                <div class="flex gap-1 mt-1" id="row-2"></div>
+                <div class="flex gap-1 mt-1" id="row-3"></div>
+            </div>
+        </div>
+
+        <div id="screen-result" class="hidden p-12 text-center">
+            <h2 class="text-4xl font-bold text-yellow-500 mb-6">おわったよ！</h2>
+            <div class="text-6xl font-bold mb-4"><span id="score-percent">0</span>%</div>
+            <p id="result-unit-name" class="text-2xl text-gray-600 mb-8"></p>
+            <div class="bg-blue-50 p-6 rounded-2xl mb-8 flex justify-around">
+                <div>
+                    <div class="text-gray-500">せいかい</div>
+                    <div class="text-3xl font-bold text-blue-600"><span id="correct-count-display">0</span> / <span id="total-count-display">0</span></div>
                 </div>
             </div>
-
-            <div class="text-center py-8 bg-blue-50 rounded-3xl mb-6 relative border-4 border-blue-100">
-                <button onclick="speakWord()" class="absolute top-2 right-2 p-3 bg-white rounded-full shadow-md hover:bg-yellow-100 transition-colors text-xl">🔊</button>
-                <div id="jp-word" class="text-2xl text-gray-600 font-bold mb-2">読み込み中...</div>
-                <div id="hint-word" class="text-4xl md:text-5xl text-blue-600 font-bold tracking-widest min-h-[60px] flex justify-center items-center italic">...</div>
-            </div>
-
-            <div class="text-center">
-                <input type="text" id="typing-input" autocomplete="off" spellcheck="false"
-                    class="w-full text-center text-4xl p-4 border-4 border-blue-200 rounded-2xl focus:outline-none focus:border-blue-500 transition-colors uppercase font-mono shadow-inner"
-                    placeholder="TYPE HERE">
-                <p id="feedback-msg" class="mt-4 text-xl font-bold h-8"></p>
-            </div>
-        </div>
-
-        <div id="result-screen" class="hidden text-center">
-            <h2 class="text-4xl font-bold text-blue-600 mb-6">Good Job!</h2>
-            <div class="bg-yellow-50 rounded-3xl p-8 mb-8 border-4 border-yellow-200 shadow-inner">
-                <p class="text-xl mb-2" id="result-unit-name">ユニット名</p>
-                <div class="text-6xl font-bold text-red-500 mb-4"><span id="score-percent">0</span>%</div>
-                <p class="text-gray-600 text-lg">せいかい: <span id="correct-count-display">0</span> / <span id="total-count-display">0</span></p>
-            </div>
-            <button onclick="showHomeScreen()" class="px-10 py-4 bg-blue-500 text-white rounded-full text-xl font-bold shadow-xl hover:bg-blue-600 transition-all transform hover:scale-110">
-                つぎの ユニットへ
-            </button>
+            <button onclick="showScreen('start')" class="bg-blue-500 hover:bg-blue-600 text-white text-2xl font-bold px-12 py-4 rounded-2xl shadow-lg transition-transform active:scale-95">もういちど！</button>
         </div>
     </div>
 
     <script>
-        // フォールバックデータ（外部 fetch が失敗した場合に使う）
-        const fallbackWords = [
-          { "id": 1, "level": "elementary", "name": "👋 あいさつ・自己紹介", "words":[{"jp":"こんにちは","en":"hello"},{"jp":"なまえ","en":"name"},{"jp":"よい・すてきな","en":"nice"},{"jp":"あう","en":"meet"}]},
-          { "id": 2, "level": "elementary", "name": "🎨 数・色・形", "words":[{"jp":"１〜２０","en":"one to twenty"},{"jp":"あか","en":"red"},{"jp":"あお","en":"blue"},{"jp":"まる","en":"circle"}]},
-          { "id": 3, "level": "elementary", "name": "🍎 食べ物・果物", "words":[{"jp":"りんご","en":"apple"},{"jp":"カレー","en":"curry"},{"jp":"ごはん・お米","en":"rice"},{"jp":"牛乳","en":"milk"}]},
-          { "id": 4, "level": "elementary", "name": "✏️ 身の回りの物", "words":[{"jp":"えんぴつ","en":"pencil"},{"jp":"消しゴム","en":"eraser"},{"jp":"机","en":"desk"},{"jp":"かばん","en":"bag"}]},
-          { "id": 5, "level": "elementary", "name": "📅 曜日・時間", "words":[{"jp":"日曜日","en":"Sunday"},{"jp":"月曜日","en":"Monday"},{"jp":"〜時","en":"o'clock"}]},
-          { "id": 6, "level": "elementary", "name": "🏃 動作・日課", "words":[{"jp":"起きる","en":"get up"},{"jp":"寝る","en":"go to bed"},{"jp":"洗う","en":"wash"}]},
-          { "id": 7, "level": "elementary", "name": "🏫 教科・学校", "words":[{"jp":"数学","en":"math"},{"jp":"理科","en":"science"},{"jp":"体育館","en":"gym"},{"jp":"先生","en":"teacher"}]},
-          { "id": 8, "level": "elementary", "name": "👨‍⚕️ 将来の夢・職業", "words":[{"jp":"医者","en":"doctor"},{"jp":"パイロット","en":"pilot"},{"jp":"〜になりたい","en":"want to be"}]},
-          { "id": 9, "level": "elementary", "name": "📜 過去の経験", "words":[{"jp":"行った","en":"went"},{"jp":"食べた","en":"ate"},{"jp":"楽しんだ","en":"enjoyed"},{"jp":"持っていた・した","en":"had"}]}
+        let allData = [];
+        let currentUnit = null;
+        let sessionWords = [];
+        let currentWordIndex = 0;
+        let corrects = 0;
+        let isUpperCase = false;
+
+        const ROWS = [
+            "QWERTYUIOP",
+            "ASDFGHJKL",
+            "ZXCVBNM"
         ];
 
-        let userProgress = { studyCleared: [], testCleared: [] };
-        let units = [];
-        let currentUnit = null;
-        let currentMode = 'study';
-        let currentIndex = 0;
-        let corrects = 0;
-        let sessionWords = [];
-        let currentLevelFilter = 'all';
-
-        const screens = {
-            home: document.getElementById('home-screen'),
-            mode: document.getElementById('mode-selection-screen'),
-            game: document.getElementById('game-screen'),
-            result: document.getElementById('result-screen')
-        };
+        // 万が一fetchに失敗した場合のサンプルデータ
+        const fallbackData = [
+            {
+                "id": 1,
+                "name": "🍎 たべもの (Sample)",
+                "words": [
+                    { "en": "apple", "jp": "りんご" },
+                    { "en": "banana", "jp": "バナナ" },
+                    { "en": "orange", "jp": "オレンジ" }
+                ]
+            }
+        ];
 
         async function loadWords() {
-            const statusEl = document.getElementById('load-status');
-            const tryPaths = [
-                'words.json',
-                './words.json',
-                window.location.pathname.replace(/\/[^/]*$/, '/words.json'),
-                new URL('words.json', window.location.href).href
-            ];
-
-            statusEl.textContent = 'words.json から読み込み中...';
-            for (const p of tryPaths) {
-                try {
-                    console.log('Trying to fetch words.json from:', p);
-                    const response = await fetch(p, {cache: "no-store"});
-                    if (!response.ok) { console.warn('Fetch response not OK for', p, response.status); continue; }
-                    const data = await response.json();
-                    units = data;
-                    statusEl.textContent = 'データを読み込みました';
-                    renderUnits();
-                    return;
-                } catch (err) {
-                    console.warn('Fetch failed for', p, err);
-                }
+            try {
+                // 絶対URLの構築方法を文字列結合に変更（blob環境対策）
+                const currentPath = window.location.pathname;
+                const dirPath = currentPath.substring(0, currentPath.lastIndexOf('/')) || '/';
+                const url = (window.location.origin === 'null' ? '' : window.location.origin) + dirPath + '/words.json';
+                
+                // 相対パスでのfetchを再試行
+                const response = await fetch('words.json').catch(() => fetch('./words.json'));
+                
+                if (!response.ok) throw new Error('Fetch failed');
+                
+                allData = await response.json();
+            } catch (error) {
+                console.warn("Using fallback data due to fetch error:", error);
+                // ファイル読み込みに失敗しても、以前に取得したデータがあればそれを使う（このスクリプト内には最新版のwordsがないため、一旦fallbackを最小限に設定）
+                // 実際には、ここに前回のwords.jsonの中身を埋め込むことも可能です。
+                allData = fallbackData;
+            } finally {
+                renderUnitList();
+                createKeyboard();
             }
-
-            console.error('Failed to load words.json from network; using built-in fallback data.');
-            document.getElementById('unit-list').innerHTML = '';
-            units = fallbackWords;
-            statusEl.textContent = '警告: 外部データの読み込みに失敗しました。内蔵データを使用しています（公開時は words.json をルートに置いてください）。';
-            renderUnits();
         }
 
-        function showScreen(screenName) {
-            Object.values(screens).forEach(s => s.classList.add('hidden'));
-            screens[screenName].classList.remove('hidden');
-        }
-
-        function filterLevel(level) { currentLevelFilter = level; renderUnits(); }
-
-        function renderUnits() {
-            const container = document.getElementById('unit-list');
-            container.innerHTML = '';
-            const filteredUnits = units.filter(u => currentLevelFilter === 'all' || u.level === currentLevelFilter);
-            filteredUnits.forEach(unit => {
-                const isStudyCleared = userProgress.studyCleared.includes(unit.id);
-                const isTestCleared = userProgress.testCleared.includes(unit.id);
-                const card = document.createElement('div');
-                let levelColor = "bg-green-100 text-green-700";
-                if(unit.level.includes("1")) levelColor = "bg-orange-100 text-orange-700";
-                card.className = `unit-card p-4 rounded-2xl border-4 cursor-pointer text-left bg-white ${isTestCleared ? 'border-yellow-400' : 'border-blue-100'}`;
-                card.onclick = () => selectUnit(unit);
-                card.innerHTML = `
-                    <div class="flex justify-between items-start mb-2">
-                        <span class="px-2 py-0.5 rounded text-[10px] font-bold ${levelColor}">${getLevelLabel(unit.level)}</span>
-                        <div class="flex gap-1 text-sm">${isStudyCleared ? '📖' : ''}${isTestCleared ? '🔥' : ''}</div>
-                    </div>
-                    <span class="font-bold text-gray-700 block text-sm sm:text-base">${unit.name}</span>
-                `;
-                container.appendChild(card);
+        function createKeyboard() {
+            ROWS.forEach((row, i) => {
+                const container = document.getElementById(`row-${i+1}`);
+                if (!container) return;
+                container.innerHTML = '';
+                row.split('').forEach(char => {
+                    const div = document.createElement('div');
+                    div.id = `key-${char}`;
+                    div.className = 'key-guide text-sm';
+                    div.textContent = char;
+                    container.appendChild(div);
+                });
             });
         }
 
-        function getLevelLabel(level) {
-            switch(level) { case 'elementary': return '小学校'; case 'junior-high-1': return '中1'; default: return level; }
+        function toggleCase() {
+            isUpperCase = document.getElementById('case-toggle').checked;
+            if (currentUnit) updateWordDisplay();
         }
 
-        function selectUnit(unit) {
+        function renderUnitList() {
+            const list = document.getElementById('unit-list');
+            if (!list) return;
+            list.innerHTML = '';
+            
+            const loadingMsg = document.getElementById('loading-msg');
+            if (loadingMsg) loadingMsg.style.display = 'none';
+
+            allData.forEach(unit => {
+                const btn = document.createElement('button');
+                btn.className = "bg-white border-4 border-blue-100 hover:border-blue-400 p-6 rounded-2xl shadow-sm text-left transition-all hover:scale-[1.02] flex items-center justify-between";
+                btn.innerHTML = `
+                    <div>
+                        <div class="text-2xl mb-1">${unit.name}</div>
+                        <div class="text-gray-400 text-sm">${unit.words.length} 単語</div>
+                    </div>
+                    <div class="text-blue-300 text-3xl">▶</div>
+                `;
+                btn.onclick = () => startSession(unit);
+                list.appendChild(btn);
+            });
+        }
+
+        function showScreen(screenId) {
+            ['start', 'play', 'result'].forEach(id => {
+                const el = document.getElementById(`screen-${id}`);
+                if (el) el.classList.add('hidden');
+            });
+            const target = document.getElementById(`screen-${screenId}`);
+            if (target) target.classList.remove('hidden');
+            
+            if (screenId === 'play') {
+                setTimeout(() => {
+                    const input = document.getElementById('typing-input');
+                    if (input) input.focus();
+                }, 100);
+            }
+        }
+
+        function startSession(unit) {
             currentUnit = unit;
-            document.getElementById('selected-unit-title').textContent = unit.name;
-            const badge = document.getElementById('level-badge');
-            badge.textContent = getLevelLabel(unit.level);
-            badge.className = "inline-block px-3 py-1 rounded-full text-xs font-bold mb-2 ";
-            if(unit.level === 'elementary') badge.classList.add('bg-green-100', 'text-green-700');
-            else badge.classList.add('bg-orange-100', 'text-orange-700');
-            showScreen('mode');
+            sessionWords = [...unit.words].sort(() => Math.random() - 0.5).slice(0, 10);
+            currentWordIndex = 0;
+            corrects = 0;
+            showScreen('play');
+            nextWord();
         }
 
-        function showHomeScreen() { renderUnits(); showScreen('home'); }
-
-        function startGame(mode) {
-            currentMode = mode; currentIndex = 0; corrects = 0;
-            sessionWords = [...currentUnit.words];
-            if (mode === 'test') sessionWords.sort(() => 0.5 - Math.random());
-            document.getElementById('mode-label').textContent = mode === 'study' ? 'がくしゅう' : 'テスト';
-            document.getElementById('total-count').textContent = sessionWords.length;
-            showScreen('game'); updateWord(); document.getElementById('typing-input').focus();
+        function nextWord() {
+            if (currentWordIndex >= sessionWords.length) {
+                showResult();
+                return;
+            }
+            updateWordDisplay();
+            const input = document.getElementById('typing-input');
+            if (input) {
+                input.value = '';
+                input.focus();
+            }
+            const progress = document.getElementById('progress-bar');
+            if (progress) progress.style.width = `${(currentWordIndex / sessionWords.length) * 100}%`;
+            highlightNextKey();
         }
 
-        function updateWord() {
-            const word = sessionWords[currentIndex];
-            document.getElementById('jp-word').textContent = word.jp;
-            document.getElementById('hint-word').textContent = currentMode === 'study' ? word.en : "_ ".repeat(word.en.length).trim();
-            document.getElementById('current-count').textContent = currentIndex + 1;
-            document.getElementById('progress-bar-fill').style.width = `${((currentIndex) / sessionWords.length) * 100}%`;
-            document.getElementById('typing-input').value = "";
-            document.getElementById('typing-input').disabled = false;
-            document.getElementById('feedback-msg').textContent = "";
-            speakWord();
+        function updateWordDisplay() {
+            const word = sessionWords[currentWordIndex];
+            if (!word) return;
+            document.getElementById('jp-display').textContent = word.jp;
+            const targetEn = isUpperCase ? word.en.toUpperCase() : word.en.toLowerCase();
+            document.getElementById('en-display').textContent = targetEn;
         }
 
-        function speakWord() {
-            const word = sessionWords[currentIndex].en;
-            const uttr = new SpeechSynthesisUtterance(word);
-            uttr.lang = 'en-US'; uttr.rate = 0.8;
-            speechSynthesis.speak(uttr);
+        function highlightNextKey() {
+            document.querySelectorAll('.key-guide').forEach(k => k.classList.remove('key-active'));
+            if (!sessionWords[currentWordIndex]) return;
+            const targetWord = sessionWords[currentWordIndex].en.toUpperCase();
+            const input = document.getElementById('typing-input');
+            const currentTyped = input ? input.value.toUpperCase() : "";
+            if (currentTyped.length < targetWord.length) {
+                const nextChar = targetWord[currentTyped.length].replace(/[^A-Z]/g, '');
+                if (nextChar) {
+                    const keyEl = document.getElementById(`key-${nextChar}`);
+                    if (keyEl) keyEl.classList.add('key-active');
+                }
+            }
         }
 
-        document.getElementById('typing-input').addEventListener('input', (e) => {
-            const target = sessionWords[currentIndex].en.toLowerCase();
-            const input = e.target.value.toLowerCase();
-            if (input === target) handleCorrect();
-            else if (input.length > 0 && !target.startsWith(input)) handleError();
+        const typingInput = document.getElementById('typing-input');
+        if (typingInput) {
+            typingInput.addEventListener('input', (e) => {
+                if (!sessionWords[currentWordIndex]) return;
+                const word = sessionWords[currentWordIndex].en.toLowerCase();
+                const val = e.target.value.toLowerCase();
+                if (word.startsWith(val)) {
+                    document.getElementById('feedback-msg').textContent = "";
+                    highlightNextKey();
+                    if (val === word) {
+                        corrects++;
+                        currentWordIndex++;
+                        setTimeout(nextWord, 150);
+                    }
+                } else {
+                    handleError();
+                    e.target.value = val.slice(0, -1);
+                }
+            });
+        }
+
+        document.addEventListener('click', () => {
+            const input = document.getElementById('typing-input');
+            if (input && !document.getElementById('screen-play').classList.contains('hidden')) {
+                input.focus();
+            }
         });
 
-        function handleCorrect() {
-            corrects++;
-            document.getElementById('feedback-msg').textContent = "✨ Correct! ✨";
-            document.getElementById('feedback-msg').className = "mt-4 text-xl font-bold text-green-500 correct-pop";
-            document.getElementById('typing-input').disabled = true;
-            const uttr = new SpeechSynthesisUtterance(sessionWords[currentIndex].en);
-            uttr.lang = 'en-US'; speechSynthesis.speak(uttr);
-            setTimeout(() => {
-                currentIndex++;
-                if (currentIndex < sessionWords.length) { updateWord(); document.getElementById('typing-input').focus(); }
-                else showResult();
-            }, 800);
-        }
-
         function handleError() {
-            const input = document.getElementById('typing-input');
-            input.classList.add('shake');
-            document.getElementById('feedback-msg').textContent = "Oops!";
-            document.getElementById('feedback-msg').className = "mt-4 text-xl font-bold text-red-500";
-            setTimeout(() => input.classList.remove('shake'), 500);
+            const display = document.getElementById('en-display');
+            if (display) display.classList.add('shake');
+            const feedback = document.getElementById('feedback-msg');
+            if (feedback) {
+                feedback.textContent = "おしい！";
+                feedback.className = "h-8 mt-4 text-xl font-bold text-red-500";
+            }
+            setTimeout(() => {
+                if (display) display.classList.remove('shake');
+            }, 500);
         }
 
         function showResult() {
-            if (currentMode === 'study') {
-                if (!userProgress.studyCleared.includes(currentUnit.id)) userProgress.studyCleared.push(currentUnit.id);
-            } else {
-                if (corrects === sessionWords.length && !userProgress.testCleared.includes(currentUnit.id)) userProgress.testCleared.push(currentUnit.id);
-            }
+            if (!currentUnit) return;
             document.getElementById('result-unit-name').textContent = currentUnit.name;
             const percent = Math.round((corrects / sessionWords.length) * 100);
             document.getElementById('score-percent').textContent = percent;
@@ -272,7 +318,7 @@
             showScreen('result');
         }
 
-        window.onload = () => { loadWords(); };
+        window.onload = loadWords;
     </script>
 </body>
 </html>
