@@ -1,0 +1,98 @@
+[
+  {
+    "id": 1,
+    "level": "elementary",
+    "name": "👋 あいさつ・自己紹介",
+    "words": [
+      { "jp": "こんにちは", "en": "hello" },
+      { "jp": "なまえ", "en": "name" },
+      { "jp": "よい・すてきな", "en": "nice" },
+      { "jp": "あう", "en": "meet" }
+    ]
+  },
+  {
+    "id": 2,
+    "level": "elementary",
+    "name": "🎨 数・色・形",
+    "words": [
+      { "jp": "１〜２０", "en": "one to twenty" },
+      { "jp": "あか", "en": "red" },
+      { "jp": "あお", "en": "blue" },
+      { "jp": "まる", "en": "circle" }
+    ]
+  },
+  {
+    "id": 3,
+    "level": "elementary",
+    "name": "🍎 食べ物・果物",
+    "words": [
+      { "jp": "りんご", "en": "apple" },
+      { "jp": "カレー", "en": "curry" },
+      { "jp": "ごはん・お米", "en": "rice" },
+      { "jp": "牛乳", "en": "milk" }
+    ]
+  },
+  {
+    "id": 4,
+    "level": "elementary",
+    "name": "✏️ 身の回りの物",
+    "words": [
+      { "jp": "えんぴつ", "en": "pencil" },
+      { "jp": "消しゴム", "en": "eraser" },
+      { "jp": "机", "en": "desk" },
+      { "jp": "かばん", "en": "bag" }
+    ]
+  },
+  {
+    "id": 5,
+    "level": "elementary",
+    "name": "📅 曜日・時間",
+    "words": [
+      { "jp": "日曜日", "en": "Sunday" },
+      { "jp": "月曜日", "en": "Monday" },
+      { "jp": "〜時", "en": "o'clock" }
+    ]
+  },
+  {
+    "id": 6,
+    "level": "elementary",
+    "name": "🏃 動作・日課",
+    "words": [
+      { "jp": "起きる", "en": "get up" },
+      { "jp": "寝る", "en": "go to bed" },
+      { "jp": "洗う", "en": "wash" }
+    ]
+  },
+  {
+    "id": 7,
+    "level": "elementary",
+    "name": "🏫 教科・学校",
+    "words": [
+      { "jp": "数学", "en": "math" },
+      { "jp": "理科", "en": "science" },
+      { "jp": "体育館", "en": "gym" },
+      { "jp": "先生", "en": "teacher" }
+    ]
+  },
+  {
+    "id": 8,
+    "level": "elementary",
+    "name": "👨‍⚕️ 将来の夢・職業",
+    "words": [
+      { "jp": "医者", "en": "doctor" },
+      { "jp": "パイロット", "en": "pilot" },
+      { "jp": "〜になりたい", "en": "want to be" }
+    ]
+  },
+  {
+    "id": 9,
+    "level": "elementary",
+    "name": "📜 過去の経験",
+    "words": [
+      { "jp": "行った", "en": "went" },
+      { "jp": "食べた", "en": "ate" },
+      { "jp": "楽しんだ", "en": "enjoyed" },
+      { "jp": "持っていた・した", "en": "had" }
+    ]
+  }
+]
