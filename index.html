@@ -49,11 +49,33 @@
             25% { transform: translateX(-5px); }
             75% { transform: translateX(5px); }
         }
+        .monster-damage {
+            animation: damage 0.3s;
+        }
+        @keyframes damage {
+            0% { transform: scale(1) rotate(0deg); filter: brightness(1); }
+            50% { transform: scale(0.8) rotate(10deg); filter: brightness(2) sepia(1); }
+            100% { transform: scale(1) rotate(0deg); filter: brightness(1); }
+        }
+        .combo-pop {
+            animation: combo 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes combo {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.5); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
     </style>
 </head>
 <body class="p-4">
 
-    <div class="max-w-4xl mx-auto flex justify-end gap-4 mb-4">
+    <div class="max-w-4xl mx-auto flex justify-between items-center mb-4">
+        <div class="bg-white px-6 py-2 rounded-full shadow-md border-2 border-blue-200">
+            <span class="text-blue-800 font-bold">LV. <span id="user-level">1</span></span>
+            <div class="inline-block w-24 h-3 bg-gray-200 rounded-full ml-2 overflow-hidden">
+                <div id="level-bar" class="bg-blue-400 h-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+        </div>
         <label class="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm cursor-pointer border-2 border-blue-200">
             <input type="checkbox" id="case-toggle" class="w-5 h-5" onchange="toggleCase()">
             <span class="text-sm font-bold text-blue-800">大文字にする (A B C)</span>
@@ -76,12 +98,20 @@
                 <div id="progress-bar-container" class="flex-1 mx-8 bg-gray-100 h-6 rounded-full overflow-hidden border-2 border-gray-200">
                     <div id="progress-bar" class="bg-green-400 h-full transition-all duration-300" style="width: 0%"></div>
                 </div>
-                <div id="timer" class="text-2xl font-bold text-blue-500 w-16"></div>
+                <div class="flex items-center gap-2">
+                    <span id="combo-display" class="hidden text-orange-500 font-black text-2xl combo-pop">0 COMBO!</span>
+                </div>
             </div>
 
-            <div class="text-center py-10">
+            <div class="text-center py-4">
+                <!-- モンスター演出エリア -->
+                <div class="relative h-32 flex justify-center items-center mb-4">
+                    <div id="monster" class="text-6xl transition-all duration-300">👾</div>
+                    <div id="damage-effect" class="absolute text-red-500 font-bold text-2xl opacity-0 pointer-events-none">HIT!</div>
+                </div>
+
                 <div id="jp-display" class="text-3xl text-gray-500 mb-2"></div>
-                <div class="flex items-center justify-center gap-4 mb-10">
+                <div class="flex items-center justify-center gap-4 mb-6">
                     <div id="en-display" class="text-7xl font-bold tracking-widest typing-font text-blue-900"></div>
                     <button onclick="speakCurrentWord()" class="bg-blue-100 hover:bg-blue-200 p-3 rounded-full transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -95,7 +125,7 @@
                 <div id="feedback-msg" class="h-8 mt-4 font-bold"></div>
             </div>
 
-            <div id="keyboard-guide" class="mt-8 flex flex-col items-center gap-1 opacity-80">
+            <div id="keyboard-guide" class="mt-4 flex flex-col items-center gap-1 opacity-80">
                 <div class="flex gap-1" id="row-1"></div>
                 <div class="flex gap-1 mt-1" id="row-2"></div>
                 <div class="flex gap-1 mt-1" id="row-3"></div>
@@ -103,15 +133,29 @@
         </div>
 
         <div id="screen-result" class="hidden p-12 text-center">
-            <h2 class="text-4xl font-bold text-yellow-500 mb-6">おわったよ！</h2>
-            <div class="text-6xl font-bold mb-4"><span id="score-percent">0</span>%</div>
+            <h2 class="text-4xl font-bold text-yellow-500 mb-2">おわったよ！</h2>
+            <div id="rank-display" class="text-8xl font-black text-orange-500 mb-6 italic">A</div>
+            <div class="text-4xl font-bold mb-4"><span id="score-percent">0</span>%</div>
             <p id="result-unit-name" class="text-2xl text-gray-600 mb-8"></p>
-            <div class="bg-blue-50 p-6 rounded-2xl mb-8 flex justify-around">
-                <div>
+            
+            <div class="grid grid-cols-2 gap-4 mb-8">
+                <div class="bg-blue-50 p-4 rounded-2xl">
                     <div class="text-gray-500">せいかい</div>
-                    <div class="text-3xl font-bold text-blue-600"><span id="correct-count-display">0</span> / <span id="total-count-display">0</span></div>
+                    <div class="text-2xl font-bold text-blue-600"><span id="correct-count-display">0</span> / <span id="total-count-display">0</span></div>
+                </div>
+                <div class="bg-orange-50 p-4 rounded-2xl">
+                    <div class="text-gray-500">さいだいコンボ</div>
+                    <div class="text-2xl font-bold text-orange-600"><span id="max-combo-display">0</span></div>
                 </div>
             </div>
+
+            <div id="exp-area" class="mb-8 hidden">
+                <div class="text-sm font-bold text-blue-800 mb-1">けいけんち かくとく！</div>
+                <div class="w-full h-4 bg-gray-200 rounded-full overflow-hidden">
+                    <div id="result-exp-bar" class="bg-blue-400 h-full transition-all duration-1000" style="width: 0%"></div>
+                </div>
+            </div>
+
             <button onclick="showScreen('start')" class="bg-blue-500 hover:bg-blue-600 text-white text-2xl font-bold px-12 py-4 rounded-2xl shadow-lg transition-transform active:scale-95">もういちど！</button>
         </div>
     </div>
@@ -122,7 +166,18 @@
         let sessionWords = [];
         let currentWordIndex = 0;
         let corrects = 0;
+        let combo = 0;
+        let maxCombo = 0;
         let isUpperCase = false;
+
+        // ユーザーの成長データ（本来はlocalStorageなどで保存するとより良い）
+        let userStats = {
+            level: 1,
+            exp: 0,
+            neededExp: 100
+        };
+
+        const MONSTERS = ["👾", "🐉", "👻", "👹", "🤖", "🛸", "🎃"];
 
         const ROWS = [
             "QWERTYUIOP",
@@ -137,19 +192,19 @@
                 "words": [
                     { "en": "apple", "jp": "りんご" },
                     { "en": "banana", "jp": "バナナ" },
-                    { "en": "orange", "jp": "オレンジ" }
+                    { "en": "orange", "jp": "オレンジ" },
+                    { "en": "grape", "jp": "ぶどう" },
+                    { "en": "melon", "jp": "めろん" }
                 ]
             }
         ];
 
-        // 音声読み上げ関数
         function speak(text) {
             if (!window.speechSynthesis) return;
-            // 前の音声をキャンセル
             window.speechSynthesis.cancel();
             const uttr = new SpeechSynthesisUtterance(text);
             uttr.lang = 'en-US';
-            uttr.rate = 0.9; // 少しゆっくりめに再生
+            uttr.rate = 0.9;
             window.speechSynthesis.speak(uttr);
         }
 
@@ -170,7 +225,14 @@
             } finally {
                 renderUnitList();
                 createKeyboard();
+                updateLevelUI();
             }
+        }
+
+        function updateLevelUI() {
+            document.getElementById('user-level').textContent = userStats.level;
+            const progress = (userStats.exp / userStats.neededExp) * 100;
+            document.getElementById('level-bar').style.width = `${progress}%`;
         }
 
         function createKeyboard() {
@@ -237,6 +299,10 @@
             sessionWords = [...unit.words].sort(() => Math.random() - 0.5).slice(0, 10);
             currentWordIndex = 0;
             corrects = 0;
+            combo = 0;
+            maxCombo = 0;
+            // モンスターをランダムに選ぶ
+            document.getElementById('monster').textContent = MONSTERS[Math.floor(Math.random() * MONSTERS.length)];
             showScreen('play');
             nextWord();
         }
@@ -255,8 +321,6 @@
             const progress = document.getElementById('progress-bar');
             if (progress) progress.style.width = `${(currentWordIndex / sessionWords.length) * 100}%`;
             highlightNextKey();
-            
-            // 単語が表示された瞬間に読み上げ
             speakCurrentWord();
         }
 
@@ -289,19 +353,50 @@
                 if (!sessionWords[currentWordIndex]) return;
                 const word = sessionWords[currentWordIndex].en.toLowerCase();
                 const val = e.target.value.toLowerCase();
+                
                 if (word.startsWith(val)) {
                     document.getElementById('feedback-msg').textContent = "";
                     highlightNextKey();
                     if (val === word) {
-                        corrects++;
-                        currentWordIndex++;
-                        setTimeout(nextWord, 150);
+                        handleCorrect();
                     }
                 } else {
                     handleError();
                     e.target.value = val.slice(0, -1);
                 }
             });
+        }
+
+        function handleCorrect() {
+            corrects++;
+            combo++;
+            if (combo > maxCombo) maxCombo = combo;
+            
+            // コンボ表示
+            const comboEl = document.getElementById('combo-display');
+            if (combo >= 2) {
+                comboEl.textContent = `${combo} COMBO!`;
+                comboEl.classList.remove('hidden', 'combo-pop');
+                void comboEl.offsetWidth; // reflow
+                comboEl.classList.add('combo-pop');
+            }
+
+            // モンスターダメージ演出
+            const monster = document.getElementById('monster');
+            monster.classList.remove('monster-damage');
+            void monster.offsetWidth;
+            monster.classList.add('monster-damage');
+            
+            const damage = document.getElementById('damage-effect');
+            damage.style.opacity = "1";
+            damage.style.transform = "translateY(-20px)";
+            setTimeout(() => {
+                damage.style.opacity = "0";
+                damage.style.transform = "translateY(0)";
+            }, 300);
+
+            currentWordIndex++;
+            setTimeout(nextWord, 150);
         }
 
         document.addEventListener('click', () => {
@@ -312,6 +407,9 @@
         });
 
         function handleError() {
+            combo = 0;
+            document.getElementById('combo-display').classList.add('hidden');
+            
             const display = document.getElementById('en-display');
             if (display) display.classList.add('shake');
             const feedback = document.getElementById('feedback-msg');
@@ -331,9 +429,48 @@
             document.getElementById('score-percent').textContent = percent;
             document.getElementById('correct-count-display').textContent = corrects;
             document.getElementById('total-count-display').textContent = sessionWords.length;
+            document.getElementById('max-combo-display').textContent = maxCombo;
+
+            // ランク判定
+            let rank = "C";
+            let color = "text-gray-400";
+            if (percent >= 100) { rank = "S"; color = "text-yellow-500"; }
+            else if (percent >= 80) { rank = "A"; color = "text-orange-500"; }
+            else if (percent >= 60) { rank = "B"; color = "text-blue-500"; }
+            
+            const rankEl = document.getElementById('rank-display');
+            rankEl.textContent = rank;
+            rankEl.className = `text-8xl font-black mb-6 italic ${color} combo-pop`;
+
+            // 経験値処理
+            document.getElementById('exp-area').classList.remove('hidden');
+            addExp(percent * 2 + maxCombo * 5);
+
             showScreen('result');
-            // 終了時にお祝い（オプション）
-            speak("Wonderful! You did it!");
+            
+            if (percent === 100) {
+                speak("Amazing! Perfect score!");
+            } else {
+                speak("Wonderful! You did it!");
+            }
+        }
+
+        function addExp(amount) {
+            userStats.exp += amount;
+            if (userStats.exp >= userStats.neededExp) {
+                userStats.level++;
+                userStats.exp -= userStats.neededExp;
+                userStats.neededExp = Math.floor(userStats.neededExp * 1.2);
+                setTimeout(() => speak("Level Up!"), 1000);
+            }
+            updateLevelUI();
+            
+            // リザルト画面のバーも更新
+            const resBar = document.getElementById('result-exp-bar');
+            resBar.style.width = "0%";
+            setTimeout(() => {
+                resBar.style.width = `${(userStats.exp / userStats.neededExp) * 100}%`;
+            }, 100);
         }
 
         window.onload = loadWords;
